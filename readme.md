@@ -6,7 +6,10 @@ In the first practical each group (of 2 students) will choose an image dataset a
 https://pytorch.org/docs/stable/torchvision/models.html
 
 Importing models 
-`import torchvision.models as models
+
+
+```python
+import torchvision.models as models
 resnet18 = models.resnet18()
 alexnet = models.alexnet()
 vgg16 = models.vgg16()
@@ -18,11 +21,13 @@ shufflenet = models.shufflenet_v2_x1_0()
 mobilenet = models.mobilenet_v2()
 resnext50_32x4d = models.resnext50_32x4d()
 wide_resnet50_2 = models.wide_resnet50_2()
-mnasnet = models.mnasnet1_0()`
+mnasnet = models.mnasnet1_0()
+```
 
 Importing Pretrained Models
 
-`import torchvision.models as models
+```python
+import torchvision.models as models
 resnet18 = models.resnet18(pretrained=True)
 alexnet = models.alexnet(pretrained=True)
 squeezenet = models.squeezenet1_0(pretrained=True)
@@ -34,7 +39,8 @@ shufflenet = models.shufflenet_v2_x1_0(pretrained=True)
 mobilenet = models.mobilenet_v2(pretrained=True)
 resnext50_32x4d = models.resnext50_32x4d(pretrained=True)
 wide_resnet50_2 = models.wide_resnet50_2(pretrained=True)
-mnasnet = models.mnasnet1_0(pretrained=True)`
+mnasnet = models.mnasnet1_0(pretrained=True)
+```
 ### Using dropout, batch normalization, weight decay, etc.
 
 ### Using different activation functions such as ReLU, ELU, Leaky ReLU, PReLU, SoftPlus, Sigmoid, etc.

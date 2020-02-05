@@ -24,6 +24,12 @@ wide_resnet50_2 = models.wide_resnet50_2()
 mnasnet = models.mnasnet1_0()
 ```
 
+
+### Using dropout, batch normalization, weight decay, etc.
+
+### Using different activation functions such as ReLU, ELU, Leaky ReLU, PReLU, SoftPlus, Sigmoid, etc.
+
+### Using pre-trained networks, data augmentation
 Importing Pretrained Models
 
 ```python
@@ -41,12 +47,6 @@ resnext50_32x4d = models.resnext50_32x4d(pretrained=True)
 wide_resnet50_2 = models.wide_resnet50_2(pretrained=True)
 mnasnet = models.mnasnet1_0(pretrained=True)
 ```
-### Using dropout, batch normalization, weight decay, etc.
-
-### Using different activation functions such as ReLU, ELU, Leaky ReLU, PReLU, SoftPlus, Sigmoid, etc.
-
-### Using pre-trained networks, data augmentation
-
 ### Using different optimizers such as SGD, SGD with momentum, Adam, RMSProp, Nadam, etc.
 
 

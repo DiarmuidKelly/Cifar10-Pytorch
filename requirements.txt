@@ -1,0 +1,3 @@
+pytorch
+torchvision
+pillow=6.2.1

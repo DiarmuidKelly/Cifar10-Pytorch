@@ -7,13 +7,14 @@ import torch
 import torch.optim as optim
 import time
 
+import argparse
 
 freeze_layers = False
-batch_size = 16
-workers = 4
+batch_size = 4
+workers = 2
 normalise = False
 include_visuals = False
-use_cuda = True
+use_cuda = False
 
 
 def test():
@@ -202,4 +203,24 @@ def test():
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--cuda', '-c', dest='use_cuda', action='store_true',
+                        default=False,
+                        help='Enable CUDA GPU processing (Default: False)')
+    parser.add_argument('--visual', '-v', dest='include_visuals', action='store_true',
+                        default=False,
+                        help='Enable matplotlib visuals (Default: False)')
+    parser.add_argument('--normalise', '-n', dest='normalise', action='store_true',
+                        default=False,
+                        help='Normalise data before training (Default: False)')
+    parser.add_argument('--batch_size', '-b', dest='batch_size', type=int,
+                        default=4,
+                        help='Batch Size (Default: 4)')
+    parser.add_argument('--workers', '-w', dest='workers', type=int,
+                        default=2,
+                        help='Number of Workers (Default: 2)')
+
+    args = parser.parse_args()
+    print(args.accumulate(args.integers))
     test()

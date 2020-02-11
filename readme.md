@@ -28,7 +28,68 @@ mnasnet = models.mnasnet1_0()
 ### Using dropout, batch normalization, weight decay, etc.
 
 ### Using different activation functions such as ReLU, ELU, Leaky ReLU, PReLU, SoftPlus, Sigmoid, etc.
+TORCH_ENUM_DEFINE(Linear)
+TORCH_ENUM_DEFINE(Conv1D)
+TORCH_ENUM_DEFINE(Conv2D)
+TORCH_ENUM_DEFINE(Conv3D)
+TORCH_ENUM_DEFINE(ConvTranspose1D)
+TORCH_ENUM_DEFINE(ConvTranspose2D)
+TORCH_ENUM_DEFINE(ConvTranspose3D)
+TORCH_ENUM_DEFINE(Sigmoid)
+TORCH_ENUM_DEFINE(Tanh)
+TORCH_ENUM_DEFINE(ReLU)
+TORCH_ENUM_DEFINE(LeakyReLU)
+TORCH_ENUM_DEFINE(FanIn)
+TORCH_ENUM_DEFINE(FanOut)
+TORCH_ENUM_DEFINE(Constant)
+TORCH_ENUM_DEFINE(Reflect)
+TORCH_ENUM_DEFINE(Replicate)
+TORCH_ENUM_DEFINE(Circular)
+TORCH_ENUM_DEFINE(Nearest)
+TORCH_ENUM_DEFINE(Bilinear)
+TORCH_ENUM_DEFINE(Bicubic)
+TORCH_ENUM_DEFINE(Trilinear)
+TORCH_ENUM_DEFINE(Area)
+TORCH_ENUM_DEFINE(Sum)
+TORCH_ENUM_DEFINE(Mean)
+TORCH_ENUM_DEFINE(Max)
+TORCH_ENUM_DEFINE(None)
+TORCH_ENUM_DEFINE(BatchMean)
+TORCH_ENUM_DEFINE(Zeros)
+TORCH_ENUM_DEFINE(Border)
+TORCH_ENUM_DEFINE(Reflection)
 
+'Linear' = {type} <class 'torch.nn.modules.linear.Linear'>
+'xavier_uniform_' = {function} <function xavier_uniform_ at 0x7f6438ea8cb0>
+'constant_' = {function} <function constant_ at 0x7f6438ea8950>
+'xavier_normal_' = {function} <function xavier_normal_ at 0x7f6438ea8d40>
+'Parameter' = {type} <class 'torch.nn.parameter.Parameter'>
+'Module' = {type} <class 'torch.nn.modules.module.Module'>
+'F' = {module} <module 'torch.nn.functional' from '/home/diarmuid/anaconda3/envs/DL-2020/lib/python3.7/site-packages/torch/nn/functional.py'>
+'Threshold' = {type} <class 'torch.nn.modules.activation.Threshold'>
+'ReLU' = {type} <class 'torch.nn.modules.activation.ReLU'>
+'RReLU' = {type} <class 'torch.nn.modules.activation.RReLU'>
+'Hardtanh' = {type} <class 'torch.nn.modules.activation.Hardtanh'>
+'ReLU6' = {type} <class 'torch.nn.modules.activation.ReLU6'>
+'Sigmoid' = {type} <class 'torch.nn.modules.activation.Sigmoid'>
+'Tanh' = {type} <class 'torch.nn.modules.activation.Tanh'>
+'ELU' = {type} <class 'torch.nn.modules.activation.ELU'>
+'CELU' = {type} <class 'torch.nn.modules.activation.CELU'>
+'SELU' = {type} <class 'torch.nn.modules.activation.SELU'>
+'GLU' = {type} <class 'torch.nn.modules.activation.GLU'>
+'Hardshrink' = {type} <class 'torch.nn.modules.activation.Hardshrink'>
+'LeakyReLU' = {type} <class 'torch.nn.modules.activation.LeakyReLU'>
+'LogSigmoid' = {type} <class 'torch.nn.modules.activation.LogSigmoid'>
+'Softplus' = {type} <class 'torch.nn.modules.activation.Softplus'>
+'Softshrink' = {type} <class 'torch.nn.modules.activation.Softshrink'>
+'MultiheadAttention' = {type} <class 'torch.nn.modules.activation.MultiheadAttention'>
+'PReLU' = {type} <class 'torch.nn.modules.activation.PReLU'>
+'Softsign' = {type} <class 'torch.nn.modules.activation.Softsign'>
+'Tanhshrink' = {type} <class 'torch.nn.modules.activation.Tanhshrink'>
+'Softmin' = {type} <class 'torch.nn.modules.activation.Softmin'>
+'Softmax' = {type} <class 'torch.nn.modules.activation.Softmax'>
+'Softmax2d' = {type} <class 'torch.nn.modules.activation.Softmax2d'>
+'LogSoftmax' = {type} <class 'torch.nn.modules.activation.LogSoftmax'>
 ### Using pre-trained networks, data augmentation
 Importing Pretrained Models
 

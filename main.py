@@ -1,13 +1,204 @@
 import torchvision.models as models
+import torchvision.datasets as datasets
+import torchvision.transforms as transforms
+import torchvision
 import torch.nn as nn
+import torch
+import torch.optim as optim
+import time
+
+
+freeze_layers = False
+batch_size = 16
+workers = 4
+normalise = False
+include_visuals = False
+use_cuda = True
+
 
 def test():
-    resnet18 = models.resnet18()
-    print(resnet18)
-    resnet18.layer1[0].relu = nn.LeakyReLU(inplace=True)
-    resnet18.layer1[1].relu = nn.LeakyReLU(inplace=True)
-    print(resnet18)
 
+    ###########################################################################################
+
+    if normalise:
+        transform = transforms.Compose(
+            [transforms.ToTensor(),
+             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    else:
+        transform = transforms.Compose(
+            [transforms.ToTensor()])
+
+    trainset = datasets.CIFAR10(root='./data', train=True,
+                                download=True, transform=transform)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                              shuffle=True, num_workers=workers)
+
+    testset = datasets.CIFAR10(root='./data', train=False,
+                               download=True, transform=transform)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=workers)
+
+    classes = ('plane', 'car', 'bird', 'cat',
+               'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
+
+    ###########################################################################################
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # Assuming that we are on a CUDA machine, this should print a CUDA device:
+    print(device)
+
+    ###########################################################################################
+    if include_visuals:
+        import matplotlib.pyplot as plt
+        import numpy as np
+
+        # functions to show an image
+
+        def imshow(img):
+            img = img / 2 + 0.5  # unnormalize
+            npimg = img.numpy()
+            plt.imshow(np.transpose(npimg, (1, 2, 0)))
+            plt.show()
+
+        # get some random training images
+    dataiter = iter(trainloader)
+    images, labels = dataiter.next()
+    if include_visuals:
+        # show images
+        imshow(torchvision.utils.make_grid(images))
+    print(len(trainloader))
+    # print labels
+    print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
+
+    ###########################################################################################
+
+    model = models.__dict__
+    model_names = sorted(name for name in models.__dict__
+                         if name.islower() and not name.startswith("__")
+                         and callable(models.__dict__[name]))
+    print(model_names)
+    model = models.__dict__["resnet152"](pretrained=True)
+    # model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
+    if use_cuda:
+        dataiter = iter(trainloader)
+        for images, labels in dataiter:
+            images, labels = images.to(device), labels.to(device)
+        dataiter = iter(testloader)
+        for images, labels in dataiter:
+            images, labels = images.to(device), labels.to(device)
+        model.cuda()
+
+    # print(model)
+    print("Model Loaded")
+
+    ###########################################################################################
+    if freeze_layers:
+        print("Freezing Layers")
+        for child in model.features.children():
+            for p in child.parameters():
+                p.requires_grad = False
+
+        # Max pooling layer
+        for child in model.features[11].children():
+            for p in child.parameters():
+                p.requires_grad = True
+
+        # Fire: Conv2D layer
+        for child in model.features[12].children():
+            for p in child.parameters():
+                p.requires_grad = True
+
+        # for child in model.features.children():
+        #     for p in child.parameters():
+        #       print(p.requires_grad)
+
+    ###########################################################################################
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001, momentum=0.9)
+    print("Defined Optimizer")
+
+    ###########################################################################################
+    start_time = time.time()
+    print('Starting Training at %s' % (start_time))
+    for epoch in range(2):  # loop over the dataset multiple times
+
+        running_loss = 0.0
+        for i, data in enumerate(trainloader, 0):
+            # get the inputs; data is a list of [inputs, labels]
+            inputs, labels = data
+            inputs, labels = images.to(device), labels.to(device)
+
+            # zero the parameter gradients
+            optimizer.zero_grad()
+
+            # forward + backward + optimize
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+
+            # print statistics
+            running_loss += loss.item()
+            if i % 200 == 199:  # print every 2000 mini-batches
+                print('[%d, %5d] loss: %.3f' %
+                      (epoch + 1, i + 1, running_loss / 2000))
+                print(time.time() - start_time)
+                running_loss = 0.0
+
+    print('Finished Training')
+
+    ###########################################################################################
+
+    PATH = './cifar_squeezenet_SCtest.pth'
+
+    torch.save(model.state_dict(), PATH)
+
+    ###########################################################################################
+    if include_visuals:
+        dataiter = iter(testloader)
+        images, labels = dataiter.next()
+
+        # print images
+        imshow(torchvision.utils.make_grid(images))
+    print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(4)))
+
+    ###########################################################################################
+
+    model = models.squeezenet1_0()
+    model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
+    model.load_state_dict(torch.load(PATH))
+
+    ###########################################################################################
+
+    outputs = model(images)
+    print(outputs)
+
+    ###########################################################################################
+
+    _, predicted = torch.max(outputs, 1)
+    # print(_)
+    # print(predicted)
+    # print(classes)
+    # print(classes[0])
+
+    print('Predicted: ', ' '.join('%5s' % classes[predicted[j]]
+                                  for j in range(4)))
+
+    ###########################################################################################
+
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for data in testloader:
+            images, labels = data
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+    print('Accuracy of the network on the 10000 test images: %d %%' % (
+            100 * correct / total))
 
 
 if __name__ == "__main__":

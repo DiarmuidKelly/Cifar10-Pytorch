@@ -15,9 +15,10 @@ workers = 2
 normalise = False
 include_visuals = False
 use_cuda = False
+model_names = []
 
 
-def test():
+def test(network_architecture):
 
     ###########################################################################################
 
@@ -41,7 +42,6 @@ def test():
 
     classes = ('plane', 'car', 'bird', 'cat',
                'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-
 
     ###########################################################################################
 
@@ -74,12 +74,8 @@ def test():
 
     ###########################################################################################
 
-    model = models.__dict__
-    model_names = sorted(name for name in models.__dict__
-                         if name.islower() and not name.startswith("__")
-                         and callable(models.__dict__[name]))
     print(model_names)
-    model = models.__dict__["resnet152"](pretrained=True)
+    model = models.__dict__[network_architecture](pretrained=True)
     # model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
     if use_cuda:
         dataiter = iter(trainloader)
@@ -91,7 +87,7 @@ def test():
         model.cuda()
 
     # print(model)
-    print("Model Loaded")
+    print("Model %s Loaded" % (network_architecture))
 
     ###########################################################################################
     if freeze_layers:
@@ -178,10 +174,6 @@ def test():
     ###########################################################################################
 
     _, predicted = torch.max(outputs, 1)
-    # print(_)
-    # print(predicted)
-    # print(classes)
-    # print(classes[0])
 
     print('Predicted: ', ' '.join('%5s' % classes[predicted[j]]
                                   for j in range(4)))
@@ -203,8 +195,15 @@ def test():
 
 
 if __name__ == "__main__":
+    model_archi = 14
+    model_names = sorted(name for name in models.__dict__
+                         if name.islower() and not name.startswith("__")
+                         and callable(models.__dict__[name]))
+    desc = ""
+    for index, mn in enumerate(model_names):
+        desc += ("| %s = %s |" % (index, mn))
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Choose an architecture:  ' + desc)
     parser.add_argument('--cuda', '-c', dest='use_cuda', action='store_true',
                         default=False,
                         help='Enable CUDA GPU processing (Default: False)')
@@ -220,7 +219,9 @@ if __name__ == "__main__":
     parser.add_argument('--workers', '-w', dest='workers', type=int,
                         default=2,
                         help='Number of Workers (Default: 2)')
-
+    parser.add_argument('--model', '-m', dest='model_archi', type=int,
+                        default=14,
+                        help='Model Architecture (Default: 14 = resnet18)')
     args = parser.parse_args()
-    print(args.accumulate(args.integers))
-    test()
+    print(args)
+    test(model_names[model_archi])

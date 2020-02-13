@@ -26,8 +26,14 @@ mnasnet = models.mnasnet1_0()
 
 
 ### Using dropout, batch normalization, weight decay, etc.
+Batch Normalisation - **implemented - disabled**
+Dropout and weight decay (L^2?) - **To be investigated**
 
 ### Using different activation functions such as ReLU, ELU, Leaky ReLU, PReLU, SoftPlus, Sigmoid, etc.
+TODO: Once settled on architecture, decompose network structure by using print(model). Perhaps, using
+model.features.chlildren() -> child params will show the activation functions being used in layer numebrs.
+Using this we can enumerate and select activation functions to change. 
+```python
 TORCH_ENUM_DEFINE(Linear)
 TORCH_ENUM_DEFINE(Conv1D)
 TORCH_ENUM_DEFINE(Conv2D)
@@ -58,7 +64,8 @@ TORCH_ENUM_DEFINE(BatchMean)
 TORCH_ENUM_DEFINE(Zeros)
 TORCH_ENUM_DEFINE(Border)
 TORCH_ENUM_DEFINE(Reflection)
-
+```
+```python
 'Linear' = {type} <class 'torch.nn.modules.linear.Linear'>
 'xavier_uniform_' = {function} <function xavier_uniform_ at 0x7f6438ea8cb0>
 'constant_' = {function} <function constant_ at 0x7f6438ea8950>
@@ -90,8 +97,10 @@ TORCH_ENUM_DEFINE(Reflection)
 'Softmax' = {type} <class 'torch.nn.modules.activation.Softmax'>
 'Softmax2d' = {type} <class 'torch.nn.modules.activation.Softmax2d'>
 'LogSoftmax' = {type} <class 'torch.nn.modules.activation.LogSoftmax'>
+```
 ### Using pre-trained networks, data augmentation
-Importing Pretrained Models
+Importing Pretrained Models - **Implemented**
+Data augmentation using compose.transforms **To be investigated**
 
 ```python
 import torchvision.models as models
@@ -109,8 +118,11 @@ wide_resnet50_2 = models.wide_resnet50_2(pretrained=True)
 mnasnet = models.mnasnet1_0(pretrained=True)
 ```
 ### Using different optimizers such as SGD, SGD with momentum, Adam, RMSProp, Nadam, etc.
+SGD **implemented**
+SGD with momentum == 0.009 **implemented**
+Investigate the rest
 
-
+## Assignment Details
 Each group can do as many comparison studies as they want and write a report with a short description and
 tables / figures with results. The final report should be at most 3 pages in length. It is advised to not use a very large
 dataset (e.g. > 200,000 examples), as this would cost too much computational time.

@@ -27,6 +27,7 @@ mnasnet = models.mnasnet1_0()
 
 ### Using dropout, batch normalization, weight decay, etc.
 Batch Normalisation - **implemented - disabled**
+
 Dropout and weight decay (L^2?) - **To be investigated**
 
 ### Using different activation functions such as ReLU, ELU, Leaky ReLU, PReLU, SoftPlus, Sigmoid, etc.
@@ -100,6 +101,7 @@ TORCH_ENUM_DEFINE(Reflection)
 ```
 ### Using pre-trained networks, data augmentation
 Importing Pretrained Models - **Implemented**
+
 Data augmentation using compose.transforms **To be investigated**
 
 ```python
@@ -119,7 +121,9 @@ mnasnet = models.mnasnet1_0(pretrained=True)
 ```
 ### Using different optimizers such as SGD, SGD with momentum, Adam, RMSProp, Nadam, etc.
 SGD **implemented**
+
 SGD with momentum == 0.009 **implemented**
+
 Investigate the rest
 
 ## Assignment Details
@@ -134,6 +138,6 @@ The report should consist of the following items: Title, student names + numbers
 
 ___
 
-#### Proposed Framework: 
+#### Framework: 
 **Pytorch** - Simplicity and models (pretrained available) - Pytorch is the research standard library for
 modern deep learning toolbox implementations. 

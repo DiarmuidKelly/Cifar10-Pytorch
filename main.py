@@ -5,11 +5,13 @@ import torchvision
 import torch.nn as nn
 import torch
 import torch.optim as optim
-import time
+import scipy
 
+import time
 import argparse
 
 freeze_layers = False
+dropout = True
 batch_size = 4
 workers = 2
 normalise = False
@@ -76,18 +78,22 @@ def test(network_architecture):
 
     print(model_names)
     model = models.__dict__[network_architecture](pretrained=True)
+    print("Model %s Loaded" % (network_architecture))
+    print(model)
     # model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
     if use_cuda:
+        print("Sending training data to GPU")
         dataiter = iter(trainloader)
         for images, labels in dataiter:
             images, labels = images.to(device), labels.to(device)
+        print("Sending testing data to GPU")
         dataiter = iter(testloader)
         for images, labels in dataiter:
             images, labels = images.to(device), labels.to(device)
-        model.cuda()
+        print("Sending model to GPU")
+        model.to(device)
 
     # print(model)
-    print("Model %s Loaded" % (network_architecture))
 
     ###########################################################################################
     if freeze_layers:
@@ -109,6 +115,12 @@ def test(network_architecture):
         # for child in model.features.children():
         #     for p in child.parameters():
         #       print(p.requires_grad)
+
+    ###########################################################################################
+    # Dropout
+
+    if dropout:
+        model = nn.Dropout(0.5)
 
     ###########################################################################################
 
@@ -195,7 +207,7 @@ def test(network_architecture):
 
 
 if __name__ == "__main__":
-    model_archi = 14
+    model_archi = 6
     model_names = sorted(name for name in models.__dict__
                          if name.islower() and not name.startswith("__")
                          and callable(models.__dict__[name]))
@@ -223,5 +235,17 @@ if __name__ == "__main__":
                         default=14,
                         help='Model Architecture (Default: 14 = resnet18)')
     args = parser.parse_args()
+
+    print(args.__dict__)
+
+    # freeze_layers = args.__dict__['freeze_layers']
+    # dropout = args.__dict__['dropout']
+    model_archi = args.__dict__['model_archi']
+    batch_size = args.__dict__['batch_size']
+    workers = args.__dict__['workers']
+    normalise = args.__dict__['normalise']
+    include_visuals = args.__dict__['include_visuals']
+    use_cuda = args.__dict__['use_cuda']
+
     print(args)
     test(model_names[model_archi])

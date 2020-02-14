@@ -5,19 +5,23 @@ import torchvision
 import torch.nn as nn
 import torch
 import torch.optim as optim
-import scipy
 
 import time
 import argparse
 
 freeze_layers = False
-dropout = True
+dropout = False
 batch_size = 4
 workers = 2
 normalise = False
 include_visuals = False
 use_cuda = False
+peregrine = False
+trainset_size = 20000
+testset_size = trainset_size / 5
 model_names = []
+
+student_number = "s4091221"  # Used for peregrine directory
 
 
 def test(network_architecture):
@@ -32,15 +36,26 @@ def test(network_architecture):
         transform = transforms.Compose(
             [transforms.ToTensor()])
 
-    trainset = datasets.CIFAR10(root='./data', train=True,
-                                download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                              shuffle=True, num_workers=workers)
+    if peregrine:
+        trainset = datasets.CIFAR10(root='/data/' + student_number + '/dataset', train=True,
+                                    download=True, transform=transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                                  shuffle=True, num_workers=workers)
 
-    testset = datasets.CIFAR10(root='./data', train=False,
-                               download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=workers)
+        testset = datasets.CIFAR10(root='/data/' + student_number + '/dataset', train=False,
+                                   download=True, transform=transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                                 shuffle=False, num_workers=workers)
+    else:
+        trainset = datasets.CIFAR10(root='./data', train=True,
+                                    download=True, transform=transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                                  shuffle=True, num_workers=workers)
+
+        testset = datasets.CIFAR10(root='./data', train=False,
+                                   download=True, transform=transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                                 shuffle=False, num_workers=workers)
 
     classes = ('plane', 'car', 'bird', 'cat',
                'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
@@ -80,7 +95,21 @@ def test(network_architecture):
     model = models.__dict__[network_architecture](pretrained=True)
     print("Model %s Loaded" % (network_architecture))
     print(model)
-    # model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
+
+    ###########################################################################################
+    #   Model conditional modifications
+
+    if network_architecture == 'squeezenet1_0' or network_architecture == 'squeezenet1_1':
+        model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
+    if network_architecture == 'resnet18' or network_architecture == 'resnet34':
+        model.fc = nn.Linear(in_features=512, out_features=10, bias=True)
+    if network_architecture == 'resnet50':
+        model.fc = nn.Linear(in_features=2048, out_features=10, bias=True)
+    if network_architecture == 'vgg11' or network_architecture == 'vgg11_bn':
+        model.classifier[6] = nn.Linear(in_features=4096, out_features=10, bias=True)
+
+    ###########################################################################################
+    # Send to GPU if available
     if use_cuda:
         print("Sending training data to GPU")
         dataiter = iter(trainloader)
@@ -120,12 +149,13 @@ def test(network_architecture):
     # Dropout
 
     if dropout:
-        model = nn.Dropout(0.5)
+        model = nn.Dropout(0.5) # TODO: This is completely wrong
 
     ###########################################################################################
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    # optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001, momentum=0.9)
     print("Defined Optimizer")
 
     ###########################################################################################
@@ -135,6 +165,8 @@ def test(network_architecture):
 
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
+            if i > trainset_size:
+                break
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data
             inputs, labels = images.to(device), labels.to(device)
@@ -149,7 +181,7 @@ def test(network_architecture):
 
             # print statistics
             running_loss += loss.item()
-            if i % 200 == 199:  # print every 2000 mini-batches
+            if i % 500 == 499:  # print every 500 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 2000))
                 print(time.time() - start_time)
@@ -164,10 +196,10 @@ def test(network_architecture):
     torch.save(model.state_dict(), PATH)
 
     ###########################################################################################
-    if include_visuals:
-        dataiter = iter(testloader)
-        images, labels = dataiter.next()
+    dataiter = iter(testloader)
+    images, labels = dataiter.next()
 
+    if include_visuals:
         # print images
         imshow(torchvision.utils.make_grid(images))
     print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(4)))
@@ -195,19 +227,21 @@ def test(network_architecture):
     correct = 0
     total = 0
     with torch.no_grad():
-        for data in testloader:
+        for i, data in enumerate(testloader):
+            if i > testset_size:
+                break
             images, labels = data
             outputs = model(images)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-    print('Accuracy of the network on the 10000 test images: %d %%' % (
+    print('Accuracy of the network on the ' + str(testset_size) + ' test images: %d %%' % (
             100 * correct / total))
 
 
 if __name__ == "__main__":
-    model_archi = 6
+    model_archi = -1
     model_names = sorted(name for name in models.__dict__
                          if name.islower() and not name.startswith("__")
                          and callable(models.__dict__[name]))
@@ -219,6 +253,9 @@ if __name__ == "__main__":
     parser.add_argument('--cuda', '-c', dest='use_cuda', action='store_true',
                         default=False,
                         help='Enable CUDA GPU processing (Default: False)')
+    parser.add_argument('--peregrine', '-p', dest='peregrine', action='store_true',
+                        default=False,
+                        help='Set condition for Peregrine Environment (Default: False)')
     parser.add_argument('--visual', '-v', dest='include_visuals', action='store_true',
                         default=False,
                         help='Enable matplotlib visuals (Default: False)')
@@ -232,8 +269,11 @@ if __name__ == "__main__":
                         default=2,
                         help='Number of Workers (Default: 2)')
     parser.add_argument('--model', '-m', dest='model_archi', type=int,
-                        default=14,
+                        default=23,
                         help='Model Architecture (Default: 14 = resnet18)')
+    parser.add_argument('--train_size', '-ts', dest='trainset_size', type=int,
+                        default=20000,
+                        help='Set train set size; len(testset) = ts / 5 (Default: 20000)')
     args = parser.parse_args()
 
     print(args.__dict__)
@@ -246,6 +286,8 @@ if __name__ == "__main__":
     normalise = args.__dict__['normalise']
     include_visuals = args.__dict__['include_visuals']
     use_cuda = args.__dict__['use_cuda']
+    peregrine = args.__dict__['peregrine']
+    trainset_size = args.__dict__['trainset_size']
 
     print(args)
     test(model_names[model_archi])

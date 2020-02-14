@@ -5,7 +5,8 @@ import torchvision
 import torch.nn as nn
 import torch
 import torch.optim as optim
-
+from pathlib import Path
+from datetime import datetime
 import time
 import argparse
 
@@ -17,7 +18,12 @@ normalise = False
 include_visuals = False
 use_cuda = False
 peregrine = False
-trainset_size = 20000
+load_from_memory = False
+pretrain = False
+epochs = 2
+learning_rate = 0
+momentum = 0
+trainset_size = 20000 # TS should be lower than 12500
 testset_size = trainset_size / 5
 model_names = []
 
@@ -92,33 +98,36 @@ def test(network_architecture):
     ###########################################################################################
 
     print(model_names)
-    model = models.__dict__[network_architecture](pretrained=True)
+    model = models.__dict__[network_architecture](pretrained=pretrain)
     print("Model %s Loaded" % (network_architecture))
     print(model)
 
     ###########################################################################################
     #   Model conditional modifications
-
+    #
     if network_architecture == 'squeezenet1_0' or network_architecture == 'squeezenet1_1':
         model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
     if network_architecture == 'resnet18' or network_architecture == 'resnet34':
         model.fc = nn.Linear(in_features=512, out_features=10, bias=True)
     if network_architecture == 'resnet50':
         model.fc = nn.Linear(in_features=2048, out_features=10, bias=True)
-    if network_architecture == 'vgg11' or network_architecture == 'vgg11_bn':
+    if network_architecture == 'vgg11' or network_architecture == 'vgg11_bn' \
+            or network_architecture == 'vgg13' or network_architecture == 'alexnet':
         model.classifier[6] = nn.Linear(in_features=4096, out_features=10, bias=True)
+    if network_architecture == 'densenet121':
+        model.classifier = nn.Linear(in_features=1024, out_features=10, bias=True)
 
     ###########################################################################################
     # Send to GPU if available
     if use_cuda:
-        print("Sending training data to GPU")
-        dataiter = iter(trainloader)
-        for images, labels in dataiter:
-            images, labels = images.to(device), labels.to(device)
-        print("Sending testing data to GPU")
-        dataiter = iter(testloader)
-        for images, labels in dataiter:
-            images, labels = images.to(device), labels.to(device)
+        # print("Sending training data to GPU")
+        # dataiter = iter(trainloader)
+        # for images, labels in dataiter:
+        #     images, labels = images.to(device), labels.to(device)
+        # print("Sending testing data to GPU")
+        # dataiter = iter(testloader)
+        # for images, labels in dataiter:
+        #     images, labels = images.to(device), labels.to(device)
         print("Sending model to GPU")
         model.to(device)
 
@@ -154,14 +163,15 @@ def test(network_architecture):
     ###########################################################################################
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
+    print(learning_rate)
     # optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001, momentum=0.9)
     print("Defined Optimizer")
 
     ###########################################################################################
     start_time = time.time()
     print('Starting Training at %s' % (start_time))
-    for epoch in range(2):  # loop over the dataset multiple times
+    for epoch in range(epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
@@ -190,9 +200,14 @@ def test(network_architecture):
     print('Finished Training')
 
     ###########################################################################################
+    if peregrine:
 
-    PATH = './cifar_squeezenet_SCtest.pth'
+        PATH = '/data/' + student_number + '/trained-models/'
+        Path(PATH).mkdir(parents=True, exist_ok=True)
+        PATH = PATH + network_architecture + str(datetime.now())
 
+    else:
+        PATH = './cifar_squeezenet_SCtest.pth'
     torch.save(model.state_dict(), PATH)
 
     ###########################################################################################
@@ -205,10 +220,20 @@ def test(network_architecture):
     print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(4)))
 
     ###########################################################################################
+    if load_from_memory:
+        # TODO: Adjust this to be dynamic to model architecture
+        model = models.squeezenet1_0()
+        model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
+        model.load_state_dict(torch.load(PATH))
 
-    model = models.squeezenet1_0()
-    model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
-    model.load_state_dict(torch.load(PATH))
+    ###########################################################################################
+    # Send testing images and loaded model to GPU
+
+    if use_cuda:
+        print("Sending data to GPU")
+        images, labels = images.to(device), labels.to(device)
+        print("Sending model to GPU")
+        model.to(device)
 
     ###########################################################################################
 
@@ -231,6 +256,7 @@ def test(network_architecture):
             if i > testset_size:
                 break
             images, labels = data
+            images, labels = images.to(device), labels.to(device)
             outputs = model(images)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
@@ -262,6 +288,12 @@ if __name__ == "__main__":
     parser.add_argument('--normalise', '-n', dest='normalise', action='store_true',
                         default=False,
                         help='Normalise data before training (Default: False)')
+    parser.add_argument('--load', '-l', dest='load_from_memory', action='store_true',
+                        default=False,
+                        help='Load the model from memory (Default: False)')
+    parser.add_argument('--pretrain', '-pt', dest='pretrain', action='store_true',
+                        default=False,
+                        help='Load the model from memory (Default: False)')
     parser.add_argument('--batch_size', '-b', dest='batch_size', type=int,
                         default=4,
                         help='Batch Size (Default: 4)')
@@ -274,6 +306,15 @@ if __name__ == "__main__":
     parser.add_argument('--train_size', '-ts', dest='trainset_size', type=int,
                         default=20000,
                         help='Set train set size; len(testset) = ts / 5 (Default: 20000)')
+    parser.add_argument('--epochs', '-ep', dest='epochs', type=int,
+                        default=2,
+                        help='Number of training epochs (Default: 2)')
+    parser.add_argument('--learning_rate', '-lr', dest='learning_rate', type=float,
+                        default=0.001,
+                        help='Learning Rate (Default: 0.001)')
+    parser.add_argument('--momentum', '-mo', dest='momentum', type=float,
+                        default=0.9,
+                        help='Momentum (Default: 0.9)')
     args = parser.parse_args()
 
     print(args.__dict__)
@@ -288,6 +329,11 @@ if __name__ == "__main__":
     use_cuda = args.__dict__['use_cuda']
     peregrine = args.__dict__['peregrine']
     trainset_size = args.__dict__['trainset_size']
+    load_from_memory = args.__dict__['load_from_memory']
+    pretrain = args.__dict__['pretrain']
+    learning_rate = args.__dict__['learning_rate']
+    epochs = args.__dict__['epochs']
+    momentum = args.__dict__['momentum']
 
     print(args)
     test(model_names[model_archi])

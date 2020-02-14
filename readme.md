@@ -7,31 +7,24 @@ https://pytorch.org/docs/stable/torchvision/models.html
 
 Importing models 
 
-**Problems with Inception v3**
+* Problems with Inception v3
+* Problems with Alexnet - output size too small
+ : given 256x1x1 _. 256x0x0. perhaps pooling layers are 
+ too small, must resize input
 
-```python
-import torchvision.models as models
-resnet18 = models.resnet18()
-alexnet = models.alexnet()
-vgg16 = models.vgg16()
-squeezenet = models.squeezenet1_0()
-densenet = models.densenet161()
-inception = models.inception_v3()
-googlenet = models.googlenet()
-shufflenet = models.shufflenet_v2_x1_0()
-mobilenet = models.mobilenet_v2()
-resnext50_32x4d = models.resnext50_32x4d()
-wide_resnet50_2 = models.wide_resnet50_2()
-mnasnet = models.mnasnet1_0()
-```
-
+**See list below for available architectures**
 
 ### Using dropout, batch normalization, weight decay, etc.
 Batch Normalisation - **implemented - disabled**
 
 Dropout and weight decay (L^2?) - **To be investigated**
+Do not dropout the feature layers, or the last layer. Go wild 
+on the classifier layers != [-1]
 
 ### Using different activation functions such as ReLU, ELU, Leaky ReLU, PReLU, SoftPlus, Sigmoid, etc.
+Only change the classifier layers' activation functions unless you perform a 
+complete retraining on the networks, i.e. pretrained = False.
+
 TODO: Once settled on architecture, decompose network structure by using print(model). Perhaps, using
 model.features.chlildren() -> child params will show the activation functions being used in layer numebrs.
 Using this we can enumerate and select activation functions to change. 

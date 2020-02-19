@@ -109,13 +109,26 @@ def test(network_architecture):
         model.classifier = torch.nn.Sequential(*(list(model.classifier.children())[0:2]))
     if network_architecture == 'resnet18' or network_architecture == 'resnet34':
         model.fc = nn.Linear(in_features=512, out_features=10, bias=True)
-    if network_architecture == 'resnet50':
+    if network_architecture == 'resnet50' or network_architecture == 'wide_resnet50_2'\
+            or network_architecture == 'wide_resnet101_2':
         model.fc = nn.Linear(in_features=2048, out_features=10, bias=True)
     if network_architecture == 'vgg11' or network_architecture == 'vgg11_bn' \
-            or network_architecture == 'vgg13' or network_architecture == 'alexnet':
+            or network_architecture == 'vgg13' or network_architecture == 'alexnet' \
+            or network_architecture == 'vgg13_bn' or network_architecture == 'vgg16' \
+            or network_architecture == 'vgg16_bn' or network_architecture == 'vgg19'\
+            or network_architecture == 'vgg19_bn':
         model.classifier[6] = nn.Linear(in_features=4096, out_features=10, bias=True)
     if network_architecture == 'densenet121':
         model.classifier = nn.Linear(in_features=1024, out_features=10, bias=True)
+    if network_architecture == 'densenet161':
+        model.classifier = nn.Linear(in_features=2208, out_features=10, bias=True)
+    if network_architecture == 'densenet169':
+        model.classifier = nn.Linear(in_features=1664, out_features=10, bias=True)
+    if network_architecture == 'densenet201':
+        model.classifier = nn.Linear(in_features=1920, out_features=10, bias=True)
+
+    print(model)
+    print("Model %s reshaped" % (network_architecture))
 
     print("Model %s Reshaped" % (network_architecture))
     print(model)
@@ -192,6 +205,7 @@ def test(network_architecture):
             outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
+            optimizer.step()
 
             # print statistics
             running_loss += loss.item()
@@ -275,6 +289,7 @@ def test(network_architecture):
 
 
 if __name__ == "__main__":
+    print("###########################################################################################################")
     model_archi = -1
     model_names = sorted(name for name in models.__dict__
                          if name.islower() and not name.startswith("__")

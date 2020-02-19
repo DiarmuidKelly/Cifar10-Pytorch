@@ -11,7 +11,8 @@ usage: main.py [-h] [--cuda] [--peregrine] [--visual] [--normalise] [--load]
                [--pretrain] [--batch_size BATCH_SIZE] [--workers WORKERS]
                [--model MODEL_ARCHI] [--train_size TRAINSET_SIZE]
                [--epochs EPOCHS] [--learning_rate LEARNING_RATE]
-               [--momentum MOMENTUM]
+               [--momentum MOMENTUM] [--weight_decay WEIGHT_DECAY]
+               [--optimizer_choice OPTIMIZER_CHOICE]
 
 Choose an architecture: | 0 = alexnet || 1 = densenet121 || 2 = densenet161 ||
 3 = densenet169 || 4 = densenet201 || 5 = googlenet || 6 = inception_v3 || 7 =
@@ -47,7 +48,12 @@ optional arguments:
   --learning_rate LEARNING_RATE, -lr LEARNING_RATE
                         Learning Rate (Default: 0.001)
   --momentum MOMENTUM, -mo MOMENTUM
-                        Momentum (Default: 0.9)
+                        Momentum (Default: 0)
+  --weight_decay WEIGHT_DECAY, -wd WEIGHT_DECAY
+                        Weight Decay (Default: 0)
+  --optimizer_choice OPTIMIZER_CHOICE, -op OPTIMIZER_CHOICE
+                        Optimizer Choice (Default: 1)
+
 ```
 
 ### Architecture Codes:
@@ -87,6 +93,11 @@ optional arguments:
 * 33 = wide_resnet101_2
 * 34 = wide_resnet50_2
 
+### Optimizer Codes:
+* 1 = SGD
+* 2 = Adam
+* 3 = ASGD
+* 4 = Adamax
 # Assignment 1 - 35%
 In the first practical each group (of 2 students) will choose an image dataset and examine the performance of different settings, such as:
 

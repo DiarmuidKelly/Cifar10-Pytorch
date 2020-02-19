@@ -109,10 +109,10 @@ def test(network_architecture):
     #   Model conditional modifications
     #
     if network_architecture == 'squeezenet1_0' or network_architecture == 'squeezenet1_1':
-        model.classifier[1] = nn.Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1))
+        model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
         model.classifier[3] = nn.AvgPool2d(kernel_size=4, stride=4)
         # model.classifier = torch.nn.Sequential(*(list(model.classifier.children())), nn.LogSoftmax(dim=1))
-        model.classifier = torch.nn.Sequential(*(list(model.classifier.children())), nn.Linear(in_features=1024, out_features=10, bias=True))
+        # model.classifier = torch.nn.Sequential(*(list(model.classifier.children())), nn.Linear(in_features=1024, out_features=10, bias=True))
     if network_architecture == 'resnet18' or network_architecture == 'resnet34':
         model.fc = nn.Linear(in_features=512, out_features=10, bias=True)
     if network_architecture == 'resnet50' or network_architecture == 'wide_resnet50_2'\

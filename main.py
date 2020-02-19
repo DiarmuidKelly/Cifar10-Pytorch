@@ -20,9 +20,11 @@ use_cuda = False
 peregrine = False
 load_from_memory = False
 pretrain = False
+optimizer_choice = 1
 epochs = 2
 learning_rate = 0
 momentum = 0
+weight_decay = 0
 trainset_size = 20000 # TS should be lower than 12500
 testset_size = trainset_size / 5
 model_names = []
@@ -131,23 +133,12 @@ def test(network_architecture):
     if network_architecture == 'densenet201':
         model.classifier = nn.Linear(in_features=1920, out_features=10, bias=True)
 
-    print(model)
-    print("Model %s reshaped" % (network_architecture))
-
     print("Model %s Reshaped" % (network_architecture))
     print(model)
 
     ###########################################################################################
     # Send to GPU if available
     if use_cuda:
-        # print("Sending training data to GPU")
-        # dataiter = iter(trainloader)
-        # for images, labels in dataiter:
-        #     images, labels = images.to(device), labels.to(device)
-        # print("Sending testing data to GPU")
-        # dataiter = iter(testloader)
-        # for images, labels in dataiter:
-        #     images, labels = images.to(device), labels.to(device)
         print("Sending model to GPU")
         model.to(device)
 
@@ -183,7 +174,14 @@ def test(network_architecture):
     ###########################################################################################
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
+    if optimizer_choice == 1:
+        optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum, weight_decay=weight_decay)
+    elif optimizer_choice == 2:
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    elif optimizer_choice == 3:
+        optimizer = optim.ASGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    elif optimizer_choice == 4:
+        optimizer = optim.Adamax(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     print(learning_rate)
     # optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001, momentum=0.9)
     print("Defined Optimizer")
@@ -341,8 +339,14 @@ if __name__ == "__main__":
                         default=0.001,
                         help='Learning Rate (Default: 0.001)')
     parser.add_argument('--momentum', '-mo', dest='momentum', type=float,
-                        default=0.9,
-                        help='Momentum (Default: 0.9)')
+                        default=0,
+                        help='Momentum (Default: 0)')
+    parser.add_argument('--weight_decay', '-wd', dest='weight_decay', type=float,
+                        default=0,
+                        help='Weight Decay (Default: 0)')
+    parser.add_argument('--optimizer_choice', '-op', dest='optimizer_choice', type=int,
+                        default=1,
+                        help='Optimizer Choice (Default: 1)')
     args = parser.parse_args()
 
     print(args.__dict__)
@@ -362,6 +366,8 @@ if __name__ == "__main__":
     learning_rate = args.__dict__['learning_rate']
     epochs = args.__dict__['epochs']
     momentum = args.__dict__['momentum']
+    weight_decay = args.__dict__['weight_decay']
+    optimizer_choice = args.__dict__['optimizer_choice']
 
     print(args)
     test(model_names[model_archi])

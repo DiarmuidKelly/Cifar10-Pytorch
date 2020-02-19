@@ -219,7 +219,7 @@ def test(network_architecture):
                       (epoch + 1, i + 1, running_loss / mini_batch_print)) # Printing %.3f and dividing by const 200 not mini_batch_size
                 print(time.time() - start_time)
                 running_loss = 0.0
-        print('Epoch [%d] loss: %f' % (epoch, epoch_loss))
+        print('Epoch [%d] loss: %f' % (epoch + 1, epoch_loss))
 
     print('Finished Training')
 

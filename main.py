@@ -100,13 +100,13 @@ def test(network_architecture):
     print(model_names)
     model = models.__dict__[network_architecture](pretrained=pretrain)
     print("Model %s Loaded" % (network_architecture))
-    print(model)
 
     ###########################################################################################
     #   Model conditional modifications
     #
-    if network_architecture == 'squeezenet1_0' or network_architecture == 'squeezenet1_1':
+    if network_architecture == 'squeezenet1_0' or network_architecture == 'squeezenet1_1': # Remove RELU and Binary output layers
         model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
+        model.classifier = torch.nn.Sequential(*(list(model.classifier.children())[0:2]))
     if network_architecture == 'resnet18' or network_architecture == 'resnet34':
         model.fc = nn.Linear(in_features=512, out_features=10, bias=True)
     if network_architecture == 'resnet50':
@@ -116,6 +116,9 @@ def test(network_architecture):
         model.classifier[6] = nn.Linear(in_features=4096, out_features=10, bias=True)
     if network_architecture == 'densenet121':
         model.classifier = nn.Linear(in_features=1024, out_features=10, bias=True)
+
+    print("Model %s Reshaped" % (network_architecture))
+    print(model)
 
     ###########################################################################################
     # Send to GPU if available
@@ -171,15 +174,16 @@ def test(network_architecture):
     ###########################################################################################
     start_time = time.time()
     print('Starting Training at %s' % (start_time))
+    model.train()
     for epoch in range(epochs):  # loop over the dataset multiple times
-
+        epoch_loss = 0.0
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             if i > trainset_size:
                 break
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data
-            inputs, labels = images.to(device), labels.to(device)
+            inputs, labels = inputs.to(device), labels.to(device)
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -191,11 +195,14 @@ def test(network_architecture):
 
             # print statistics
             running_loss += loss.item()
-            if i % 500 == 499:  # print every 500 mini-batches
-                print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 2000))
+            epoch_loss += running_loss
+            mini_batch_print = 500
+            if i % mini_batch_print == mini_batch_print-1:  # print every 500 mini-batches
+                print('[%d, %5d] loss: %f' %
+                      (epoch + 1, i + 1, running_loss / mini_batch_print)) # Printing %.3f and dividing by const 200 not mini_batch_size
                 print(time.time() - start_time)
                 running_loss = 0.0
+        print('Epoch [%d] loss: %f' % (epoch, epoch_loss))
 
     print('Finished Training')
 
@@ -237,6 +244,7 @@ def test(network_architecture):
 
     ###########################################################################################
 
+    model.eval()
     outputs = model(images)
     print(outputs)
 

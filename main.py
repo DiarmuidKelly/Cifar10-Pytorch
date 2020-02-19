@@ -41,6 +41,8 @@ def test(network_architecture):
 
     if normalise:
         transform = transforms.Compose(
+            transforms.Resize(256),  # Should resizing do anything to the outcome?
+            transforms.CenterCrop(224),  # Why 224?
             [transforms.ToTensor(),
              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     else:
@@ -111,7 +113,6 @@ def test(network_architecture):
     ###########################################################################################
     #   Model conditional modifications
     #
-
     # Squeezenet
 
     if network_architecture == 'squeezenet1_0' or network_architecture == 'squeezenet1_1':
@@ -218,7 +219,7 @@ def test(network_architecture):
             # print statistics
             running_loss += loss.item()
             epoch_loss += running_loss
-            if i % mini_batch_print == mini_batch_print-1:  # print every 500 mini-batches
+            if i % mini_batch_print == mini_batch_print-1:  # print every 500 mini-batch_scripts
 
                 print('[%d, %5d] loss: %f' %
                       (epoch + 1, i + 1, running_loss / mini_batch_print)) # Printing %.3f and dividing by const 200 not mini_batch_size

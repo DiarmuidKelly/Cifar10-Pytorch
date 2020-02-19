@@ -25,8 +25,11 @@ epochs = 2
 learning_rate = 0
 momentum = 0
 weight_decay = 0
-trainset_size = 20000 # TS should be lower than 12500
+trainset_size = 20000  # TS should be lower than 12500
 testset_size = trainset_size / 5
+
+# Constants
+mini_batch_print = 500
 model_names = []
 
 student_number = "s4091221"  # Used for peregrine directory
@@ -108,22 +111,34 @@ def test(network_architecture):
     ###########################################################################################
     #   Model conditional modifications
     #
+
+    # Squeezenet
+
     if network_architecture == 'squeezenet1_0' or network_architecture == 'squeezenet1_1':
         model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
         model.classifier[3] = nn.AvgPool2d(kernel_size=4, stride=4)
         # model.classifier = torch.nn.Sequential(*(list(model.classifier.children())), nn.LogSoftmax(dim=1))
         # model.classifier = torch.nn.Sequential(*(list(model.classifier.children())), nn.Linear(in_features=1024, out_features=10, bias=True))
+
+    # Resnet
+
     if network_architecture == 'resnet18' or network_architecture == 'resnet34':
         model.fc = nn.Linear(in_features=512, out_features=10, bias=True)
     if network_architecture == 'resnet50' or network_architecture == 'wide_resnet50_2'\
             or network_architecture == 'wide_resnet101_2':
         model.fc = nn.Linear(in_features=2048, out_features=10, bias=True)
+
+    # VGG
+
     if network_architecture == 'vgg11' or network_architecture == 'vgg11_bn' \
             or network_architecture == 'vgg13' or network_architecture == 'alexnet' \
             or network_architecture == 'vgg13_bn' or network_architecture == 'vgg16' \
             or network_architecture == 'vgg16_bn' or network_architecture == 'vgg19'\
             or network_architecture == 'vgg19_bn':
         model.classifier[6] = nn.Linear(in_features=4096, out_features=10, bias=True)
+
+    # Densenet
+
     if network_architecture == 'densenet121':
         model.classifier = nn.Linear(in_features=1024, out_features=10, bias=True)
     if network_architecture == 'densenet161':
@@ -133,7 +148,7 @@ def test(network_architecture):
     if network_architecture == 'densenet201':
         model.classifier = nn.Linear(in_features=1920, out_features=10, bias=True)
 
-    print("Model %s Reshaped" % (network_architecture))
+    print("Model %s Reshaped" % network_architecture)
     print(model)
 
     ###########################################################################################
@@ -141,8 +156,6 @@ def test(network_architecture):
     if use_cuda:
         print("Sending model to GPU")
         model.to(device)
-
-    # print(model)
 
     ###########################################################################################
     if freeze_layers:
@@ -160,16 +173,11 @@ def test(network_architecture):
         for child in model.features[12].children():
             for p in child.parameters():
                 p.requires_grad = True
-
-        # for child in model.features.children():
-        #     for p in child.parameters():
-        #       print(p.requires_grad)
-
     ###########################################################################################
     # Dropout
 
     if dropout:
-        model = nn.Dropout(0.5) # TODO: This is completely wrong
+        model = nn.Dropout(0.5)  # TODO: This is completely wrong
 
     ###########################################################################################
 
@@ -182,13 +190,12 @@ def test(network_architecture):
         optimizer = optim.ASGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     elif optimizer_choice == 4:
         optimizer = optim.Adamax(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-    print(learning_rate)
-    # optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001, momentum=0.9)
-    print("Defined Optimizer")
+    print("Learning Rate: %s, Weight Decay: %s, Momentum: %s" % (learning_rate, weight_decay, momentum))
+    print("Defined %s Optimizer" % type(optimizer))
 
     ###########################################################################################
     start_time = time.time()
-    print('Starting Training at %s' % (start_time))
+    print('Starting Training at %s' % start_time)
     model.train()
     for epoch in range(epochs):  # loop over the dataset multiple times
         epoch_loss = 0.0
@@ -211,7 +218,6 @@ def test(network_architecture):
             # print statistics
             running_loss += loss.item()
             epoch_loss += running_loss
-            mini_batch_print = 500
             if i % mini_batch_print == mini_batch_print-1:  # print every 500 mini-batches
 
                 print('[%d, %5d] loss: %f' %
@@ -233,8 +239,10 @@ def test(network_architecture):
     else:
         PATH = './cifar_squeezenet_SCtest.pth'
     torch.save(model.state_dict(), PATH)
+    print("Saving model to %s" % PATH)
 
     ###########################################################################################
+
     dataiter = iter(testloader)
     images, labels = dataiter.next()
 

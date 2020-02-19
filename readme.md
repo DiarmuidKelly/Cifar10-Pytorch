@@ -4,6 +4,19 @@
 * Squeezenet: Reshaping inputs to 256 (may keep for all architectures) and centercrop
 * Densenet appears to work 🤞
 * VGG also appears to work 😊
+
+# Testing Outline
+##### Variable Parameters:
+1. Architecture [-m] - see list for codes
+2. Optimzer [-op] - see list for codes
+3. Pretain [-pt] - True/False
+4. Batch Size [-b] - 2,4,8,16 (maybe more)
+5. Trainset Size [-ts] - default 12500 (testset is ts/5)
+6. Training Epochs [-ep] - 2, 4 and 10 tested (10 is best practise?)
+7. Momentum [-mo] - 0 off/default (0.9 standard)
+8. Weight Decay [-wd] - 0 off/default (**Untested**)
+9. Learning Rate [-lr] - 0.001 Default (**needs experimentation**)
+10. Normalise Inputs [-n] - **Needs testing and further implementation**
 # Usage
 
 ```bash
@@ -57,11 +70,13 @@ optional arguments:
 ```
 
 ### Architecture Codes:
+**Bold** indicates implemented
+_Italic_ indicates in progress
 * 0 = alexnet
-* 1 = densenet121
-* 2 = densenet161
-* 3 = densenet169
-* 4 = densenet201
+* 1 = **densenet121**
+* 2 = **densenet161**
+* 3 = **densenet169**
+* 4 = **densenet201**
 * 5 = googlenet
 * 6 = inception_v3
 * 7 = mnasnet0_5
@@ -69,29 +84,29 @@ optional arguments:
 * 9 = mnasnet1_0
 * 10 = mnasnet1_3
 * 11 = mobilenet_v2
-* 12 = resnet101
-* 13 = resnet152
-* 14 = resnet18
-* 15 = resnet34
-* 16 = resnet50 
+* 12 = **resnet101**
+* 13 = **resnet152**
+* 14 = **resnet18**
+* 15 = **resnet34**
+* 16 = **resnet50** 
 * 17 = resnext101_32x8d
 * 18 = resnext50_32x4d
 * 19 = shufflenet_v2_x0_5
 * 20 = shufflenet_v2_x1_0
 * 21 = shufflenet_v2_x1_5
 * 22 = shufflenet_v2_x2_0
-* 23 = squeezenet1_0
-* 24 = squeezenet1_1
-* 25 = vgg11
-* 26 = vgg11_bn
-* 27 = vgg13
-* 28 = vgg13_bn
-* 29 = vgg16
-* 30 = vgg16_bn
-* 31 = vgg19
-* 32 = vgg19_bn
-* 33 = wide_resnet101_2
-* 34 = wide_resnet50_2
+* 23 = _squeezenet1_0_
+* 24 = _squeezenet1_1_
+* 25 = **vgg11**
+* 26 = **vgg11_bn**
+* 27 = **vgg13**
+* 28 = **vgg13_bn**
+* 29 = **vgg16**
+* 30 = **vgg16_bn**
+* 31 = **vgg19**
+* 32 = **vgg19_bn**
+* 33 = **wide_resnet101_2**
+* 34 = **wide_resnet50_2**
 
 ### Optimizer Codes:
 * 1 = SGD

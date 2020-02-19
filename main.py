@@ -40,9 +40,9 @@ def test(network_architecture):
              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     else:
         transform = transforms.Compose([
-            transforms.Resize(256),
+            transforms.Resize(256),  # Should resizing do anything to the outcome?
             transforms.CenterCrop(224),
-            transforms.ToTensor()]) # TODO: transforms on inputs depedent on architecture
+            transforms.ToTensor()])  # TODO: transforms on inputs depedent on architecture
 
     if peregrine:
         trainset = datasets.CIFAR10(root='/data/' + student_number + '/dataset', train=True,
@@ -107,9 +107,10 @@ def test(network_architecture):
     #   Model conditional modifications
     #
     if network_architecture == 'squeezenet1_0' or network_architecture == 'squeezenet1_1':
-        model.classifier[1] = nn.Conv2d(512, 10, kernel_size=(1, 1), stride=(1, 1))
+        model.classifier[1] = nn.Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1))
         model.classifier[3] = nn.AvgPool2d(kernel_size=4, stride=4)
-        model.classifier = torch.nn.Sequential(*(list(model.classifier.children())), nn.LogSoftmax(dim=1))
+        # model.classifier = torch.nn.Sequential(*(list(model.classifier.children())), nn.LogSoftmax(dim=1))
+        model.classifier = torch.nn.Sequential(*(list(model.classifier.children())), nn.Linear(in_features=1024, out_features=10, bias=True))
     if network_architecture == 'resnet18' or network_architecture == 'resnet34':
         model.fc = nn.Linear(in_features=512, out_features=10, bias=True)
     if network_architecture == 'resnet50' or network_architecture == 'wide_resnet50_2'\
@@ -209,15 +210,16 @@ def test(network_architecture):
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-
             # print statistics
             running_loss += loss.item()
             epoch_loss += running_loss
             mini_batch_print = 500
             if i % mini_batch_print == mini_batch_print-1:  # print every 500 mini-batches
+
                 print('[%d, %5d] loss: %f' %
                       (epoch + 1, i + 1, running_loss / mini_batch_print)) # Printing %.3f and dividing by const 200 not mini_batch_size
                 print(time.time() - start_time)
+                # print(outputs.max(1))
                 running_loss = 0.0
         print('Epoch [%d] loss: %f' % (epoch + 1, epoch_loss))
 

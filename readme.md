@@ -1,3 +1,92 @@
+### Fixing stuck loss; tried:
+* Squeezenet: Reshaping output to a logsoftmax layer (reduces from ~2.7 -> 2.3 then sticks)
+* Squeezenet: Changing pooling layers
+* Squeezenet: Reshaping inputs to 256 (may keep for all architectures) and centercrop
+* Densenet appears to work 🤞
+* VGG also appears to work 😊
+# Usage
+
+```bash
+usage: main.py [-h] [--cuda] [--peregrine] [--visual] [--normalise] [--load]
+               [--pretrain] [--batch_size BATCH_SIZE] [--workers WORKERS]
+               [--model MODEL_ARCHI] [--train_size TRAINSET_SIZE]
+               [--epochs EPOCHS] [--learning_rate LEARNING_RATE]
+               [--momentum MOMENTUM]
+
+Choose an architecture: | 0 = alexnet || 1 = densenet121 || 2 = densenet161 ||
+3 = densenet169 || 4 = densenet201 || 5 = googlenet || 6 = inception_v3 || 7 =
+mnasnet0_5 || 8 = mnasnet0_75 || 9 = mnasnet1_0 || 10 = mnasnet1_3 || 11 =
+mobilenet_v2 || 12 = resnet101 || 13 = resnet152 || 14 = resnet18 || 15 =
+resnet34 || 16 = resnet50 || 17 = resnext101_32x8d || 18 = resnext50_32x4d ||
+19 = shufflenet_v2_x0_5 || 20 = shufflenet_v2_x1_0 || 21 = shufflenet_v2_x1_5
+|| 22 = shufflenet_v2_x2_0 || 23 = squeezenet1_0 || 24 = squeezenet1_1 || 25 =
+vgg11 || 26 = vgg11_bn || 27 = vgg13 || 28 = vgg13_bn || 29 = vgg16 || 30 =
+vgg16_bn || 31 = vgg19 || 32 = vgg19_bn || 33 = wide_resnet101_2 || 34 =
+wide_resnet50_2 |
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --cuda, -c            Enable CUDA GPU processing (Default: False)
+  --peregrine, -p       Set condition for Peregrine Environment (Default:
+                        False)
+  --visual, -v          Enable matplotlib visuals (Default: False)
+  --normalise, -n       Normalise data before training (Default: False)
+  --load, -l            Load the model from memory (Default: False)
+  --pretrain, -pt       Load the model from memory (Default: False)
+  --batch_size BATCH_SIZE, -b BATCH_SIZE
+                        Batch Size (Default: 4)
+  --workers WORKERS, -w WORKERS
+                        Number of Workers (Default: 2)
+  --model MODEL_ARCHI, -m MODEL_ARCHI
+                        Model Architecture (Default: 14 = resnet18)
+  --train_size TRAINSET_SIZE, -ts TRAINSET_SIZE
+                        Set train set size; len(testset) = ts / 5 (Default:
+                        20000)
+  --epochs EPOCHS, -ep EPOCHS
+                        Number of training epochs (Default: 2)
+  --learning_rate LEARNING_RATE, -lr LEARNING_RATE
+                        Learning Rate (Default: 0.001)
+  --momentum MOMENTUM, -mo MOMENTUM
+                        Momentum (Default: 0.9)
+```
+
+### Architecture Codes:
+* 0 = alexnet
+* 1 = densenet121
+* 2 = densenet161
+* 3 = densenet169
+* 4 = densenet201
+* 5 = googlenet
+* 6 = inception_v3
+* 7 = mnasnet0_5
+* 8 = mnasnet0_75
+* 9 = mnasnet1_0
+* 10 = mnasnet1_3
+* 11 = mobilenet_v2
+* 12 = resnet101
+* 13 = resnet152
+* 14 = resnet18
+* 15 = resnet34
+* 16 = resnet50 
+* 17 = resnext101_32x8d
+* 18 = resnext50_32x4d
+* 19 = shufflenet_v2_x0_5
+* 20 = shufflenet_v2_x1_0
+* 21 = shufflenet_v2_x1_5
+* 22 = shufflenet_v2_x2_0
+* 23 = squeezenet1_0
+* 24 = squeezenet1_1
+* 25 = vgg11
+* 26 = vgg11_bn
+* 27 = vgg13
+* 28 = vgg13_bn
+* 29 = vgg16
+* 30 = vgg16_bn
+* 31 = vgg19
+* 32 = vgg19_bn
+* 33 = wide_resnet101_2
+* 34 = wide_resnet50_2
+
 # Assignment 1 - 35%
 In the first practical each group (of 2 students) will choose an image dataset and examine the performance of different settings, such as:
 
@@ -136,76 +225,3 @@ ___
 **Pytorch** - Simplicity and models (pretrained available) - Pytorch is the research standard library for
 modern deep learning toolbox implementations. 
 
-# Usage
-
-```bash
-usage: main.py [-h] [--cuda] [--peregrine-p] [--visual] [--normalise]
-               [--batch_size BATCH_SIZE] [--workers WORKERS]
-               [--model MODEL_ARCHI] [--train_size TRAINSET_SIZE]
-
-Choose an architecture: | 0 = alexnet || 1 = densenet121 || 2 = densenet161 ||
-3 = densenet169 || 4 = densenet201 || 5 = googlenet || 6 = inception_v3 || 7 =
-mnasnet0_5 || 8 = mnasnet0_75 || 9 = mnasnet1_0 || 10 = mnasnet1_3 || 11 =
-mobilenet_v2 || 12 = resnet101 || 13 = resnet152 || 14 = resnet18 || 15 =
-resnet34 || 16 = resnet50 || 17 = resnext101_32x8d || 18 = resnext50_32x4d ||
-19 = shufflenet_v2_x0_5 || 20 = shufflenet_v2_x1_0 || 21 = shufflenet_v2_x1_5
-|| 22 = shufflenet_v2_x2_0 || 23 = squeezenet1_0 || 24 = squeezenet1_1 || 25 =
-vgg11 || 26 = vgg11_bn || 27 = vgg13 || 28 = vgg13_bn || 29 = vgg16 || 30 =
-vgg16_bn || 31 = vgg19 || 32 = vgg19_bn || 33 = wide_resnet101_2 || 34 =
-wide_resnet50_2 |
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --cuda, -c            Enable CUDA GPU processing (Default: False)
-  --peregrine-p         Set condition for Peregrine Environment (Default:
-                        False)
-  --visual, -v          Enable matplotlib visuals (Default: False)
-  --normalise, -n       Normalise data before training (Default: False)
-  --batch_size BATCH_SIZE, -b BATCH_SIZE
-                        Batch Size (Default: 4)
-  --workers WORKERS, -w WORKERS
-                        Number of Workers (Default: 2)
-  --model MODEL_ARCHI, -m MODEL_ARCHI
-                        Model Architecture (Default: 14 = resnet18)
-  --train_size TRAINSET_SIZE, -ts TRAINSET_SIZE
-                        Set train set size; len(testset) = ts / 5 (Default:
-                        20000)
-
-```
-
-### Architecture Codes:
-* 0 = alexnet
-* 1 = densenet121
-* 2 = densenet161
-* 3 = densenet169
-* 4 = densenet201
-* 5 = googlenet
-* 6 = inception_v3
-* 7 = mnasnet0_5
-* 8 = mnasnet0_75
-* 9 = mnasnet1_0
-* 10 = mnasnet1_3
-* 11 = mobilenet_v2
-* 12 = resnet101
-* 13 = resnet152
-* 14 = resnet18
-* 15 = resnet34
-* 16 = resnet50 
-* 17 = resnext101_32x8d
-* 18 = resnext50_32x4d
-* 19 = shufflenet_v2_x0_5
-* 20 = shufflenet_v2_x1_0
-* 21 = shufflenet_v2_x1_5
-* 22 = shufflenet_v2_x2_0
-* 23 = squeezenet1_0
-* 24 = squeezenet1_1
-* 25 = vgg11
-* 26 = vgg11_bn
-* 27 = vgg13
-* 28 = vgg13_bn
-* 29 = vgg16
-* 30 = vgg16_bn
-* 31 = vgg19
-* 32 = vgg19_bn
-* 33 = wide_resnet101_2
-* 34 = wide_resnet50_2

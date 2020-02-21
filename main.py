@@ -138,9 +138,9 @@ def test(network_architecture):
             or network_architecture == 'vgg19_bn':
         model.classifier[6] = nn.Linear(in_features=4096, out_features=10, bias=True)
 
-    # Densenet
+    # Densenet & GoogleNet
 
-    if network_architecture == 'densenet121':
+    if network_architecture == 'densenet121' or network_architecture == 'googlenet':
         model.classifier = nn.Linear(in_features=1024, out_features=10, bias=True)
     if network_architecture == 'densenet161':
         model.classifier = nn.Linear(in_features=2208, out_features=10, bias=True)
@@ -149,8 +149,15 @@ def test(network_architecture):
     if network_architecture == 'densenet201':
         model.classifier = nn.Linear(in_features=1920, out_features=10, bias=True)
 
-    print("Model %s Reshaped" % network_architecture)
+    # Mobile Net
+
+    if network_architecture == 'mobilenet_v2' or network_architecture == 'mnasnet0_5'\
+            or network_architecture == 'mnasnet0_75' or network_architecture == 'mnasnet1_0'\
+            or network_architecture == 'mnasnet1_3':
+        model.classifier = nn.Linear(in_features=1280, out_features=10, bias=True)
+
     print(model)
+    print("Model %s Reshaped" % network_architecture)
 
     ###########################################################################################
     # Send to GPU if available
@@ -195,6 +202,7 @@ def test(network_architecture):
     print("Defined %s Optimizer" % type(optimizer))
 
     ###########################################################################################
+
     start_time = time.time()
     print('Starting Training at %s' % start_time)
     model.train()

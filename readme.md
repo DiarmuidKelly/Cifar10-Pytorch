@@ -72,18 +72,18 @@ optional arguments:
 ### Architecture Codes:
 **Bold** indicates implemented
 _Italic_ indicates in progress
-* 0 = alexnet
+* 0 = **alexnet**
 * 1 = **densenet121**
 * 2 = **densenet161**
 * 3 = **densenet169**
 * 4 = **densenet201**
-* 5 = googlenet
+* 5 = **googlenet**
 * 6 = inception_v3
-* 7 = mnasnet0_5
-* 8 = mnasnet0_75
-* 9 = mnasnet1_0
-* 10 = mnasnet1_3
-* 11 = mobilenet_v2
+* 7 = **mnasnet0_5**
+* 8 = **mnasnet0_75** (No Pretrained Avail)
+* 9 = **mnasnet1_0**
+* 10 = **mnasnet1_3**
+* 11 = **mobilenet_v2**
 * 12 = **resnet101**
 * 13 = **resnet152**
 * 14 = **resnet18**

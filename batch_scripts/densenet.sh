@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=03:00:00
+#SBATCH --time=07:00:00
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:v100:1
 #SBATCH --mem=12000
@@ -9,10 +9,8 @@ module load Python
 pip install torchvision
 pip install scipy
 
-
 python ./main.py -p -c -m 1 -ep 4|| true
 python ./main.py -p -c -m 2 -ep 4|| true
 python ./main.py -p -c -m 3 -ep 4|| true
 python ./main.py -p -c -m 4 -ep 4|| true
 
-#jobinfo *9549415*

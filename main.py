@@ -44,12 +44,13 @@ def test(network_architecture):
             transforms.Resize(256),  # Should resizing do anything to the outcome?
             transforms.CenterCrop(224),  # Why 224?
             [transforms.ToTensor(),
-             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])  # Apparently these are the correct values:
+        # https://github.com/pytorch/tutorials/blob/master/beginner_source/blitz/cifar10_tutorial.py
     else:
         transform = transforms.Compose([
             transforms.Resize(256),  # Should resizing do anything to the outcome?
             transforms.CenterCrop(224),
-            transforms.ToTensor()])  # TODO: transforms on inputs depedent on architecture
+            transforms.ToTensor()])  # TODO: transforms on inputs dependant on architecture
 
     if peregrine:
         trainset = datasets.CIFAR10(root='/data/' + student_number + '/dataset', train=True,
@@ -140,7 +141,7 @@ def test(network_architecture):
 
     # Densenet & GoogleNet
 
-    if network_architecture == 'densenet121' or network_architecture == 'googlenet':
+    if network_architecture == 'densenet121.sh' or network_architecture == 'googlenet':
         model.classifier = nn.Linear(in_features=1024, out_features=10, bias=True)
     if network_architecture == 'densenet161':
         model.classifier = nn.Linear(in_features=2208, out_features=10, bias=True)

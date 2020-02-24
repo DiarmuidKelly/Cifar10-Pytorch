@@ -5,6 +5,7 @@ import torchvision
 import torch.nn as nn
 import torch
 import torch.optim as optim
+import numpy as np
 from pathlib import Path
 from datetime import datetime
 import time
@@ -31,6 +32,7 @@ testset_size = trainset_size / 5
 # Constants
 mini_batch_print = 500
 model_names = []
+loss_vals = []
 
 student_number = "s4091221"  # Used for peregrine directory
 
@@ -40,16 +42,16 @@ def test(network_architecture):
     ###########################################################################################
 
     if normalise:
-        transform = transforms.Compose(
-            transforms.Resize(256),  # Should resizing do anything to the outcome?
-            transforms.CenterCrop(224),  # Why 224?
-            [transforms.ToTensor(),
-             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])  # Apparently these are the correct values:
+        transform = transforms.Compose([
+            # transforms.Resize(256),  # Should resizing do anything to the outcome?
+            # transforms.CenterCrop(224),  # Why 224?
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])  # Apparently these are the correct values:
         # https://github.com/pytorch/tutorials/blob/master/beginner_source/blitz/cifar10_tutorial.py
     else:
         transform = transforms.Compose([
-            transforms.Resize(256),  # Should resizing do anything to the outcome?
-            transforms.CenterCrop(224),
+            # transforms.Resize(256),  # Should resizing do anything to the outcome?
+            # transforms.CenterCrop(224),
             transforms.ToTensor()])  # TODO: transforms on inputs dependant on architecture
 
     if peregrine:
@@ -85,7 +87,6 @@ def test(network_architecture):
     ###########################################################################################
     if include_visuals:
         import matplotlib.pyplot as plt
-        import numpy as np
 
         # functions to show an image
 
@@ -233,8 +234,10 @@ def test(network_architecture):
                 print('[%d, %5d] loss: %f' %
                       (epoch + 1, i + 1, running_loss / mini_batch_print)) # Printing %.3f and dividing by const 200 not mini_batch_size
                 print(time.time() - start_time)
+                loss_vals.append([epoch + 1, i+1, running_loss / mini_batch_print])
                 # print(outputs.max(1))
                 running_loss = 0.0
+        loss_vals.append([epoch + 1, -1, epoch_loss])
         print('Epoch [%d] loss: %f' % (epoch + 1, epoch_loss))
 
     print('Finished Training')
@@ -249,6 +252,7 @@ def test(network_architecture):
     else:
         PATH = './cifar_squeezenet_SCtest.pth'
     torch.save(model.state_dict(), PATH)
+    np.save(PATH + '.npy', loss_vals)
     print("Saving model to %s" % PATH)
 
     ###########################################################################################

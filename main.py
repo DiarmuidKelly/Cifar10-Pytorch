@@ -21,6 +21,7 @@ use_cuda = False
 peregrine = False
 load_from_memory = False
 pretrain = False
+learning_rate_scheduler = False
 optimizer_choice = 1
 epochs = 2
 learning_rate = 0
@@ -160,7 +161,9 @@ def test(network_architecture):
 
     print(model)
     print("Model %s Reshaped" % network_architecture)
-
+    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+    params = sum([np.prod(p.size()) for p in model_parameters])
+    print("Number of parameters: %s " % params)
     ###########################################################################################
     # Send to GPU if available
     if use_cuda:
@@ -204,6 +207,10 @@ def test(network_architecture):
     print("Defined %s Optimizer" % type(optimizer))
 
     ###########################################################################################
+    if learning_rate_scheduler:
+        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 15], gamma=0.1)
+
+    ###########################################################################################
 
     start_time = time.time()
     print('Starting Training at %s' % start_time)
@@ -225,7 +232,10 @@ def test(network_architecture):
             outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
-            optimizer.step()
+            if learning_rate_scheduler:
+                scheduler.step()
+            else:
+                optimizer.step()
             # print statistics
             running_loss += loss.item()
             epoch_loss += running_loss
@@ -342,6 +352,9 @@ if __name__ == "__main__":
     parser.add_argument('--pretrain', '-pt', dest='pretrain', action='store_true',
                         default=False,
                         help='Load the model from memory (Default: False)')
+    parser.add_argument('--lr_scheduler', '-lrs', dest='learning_rate_scheduler', action='store_true',
+                        default=False,
+                        help='Use a MultiStep Learning Rate(Default: False)')
     parser.add_argument('--batch_size', '-b', dest='batch_size', type=int,
                         default=4,
                         help='Batch Size (Default: 4)')
@@ -386,6 +399,7 @@ if __name__ == "__main__":
     load_from_memory = args.__dict__['load_from_memory']
     pretrain = args.__dict__['pretrain']
     learning_rate = args.__dict__['learning_rate']
+    learning_rate_scheduler = args.__dict__['learning_rate_scheduler']
     epochs = args.__dict__['epochs']
     momentum = args.__dict__['momentum']
     weight_decay = args.__dict__['weight_decay']

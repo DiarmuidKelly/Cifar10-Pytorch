@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 import numpy as np
 from os.path import dirname, basename, isfile, join
 import glob
@@ -24,17 +24,20 @@ def run():
 
     print(files)
     print(int(results[0][2][1]))
-    x = []
-    y = []
 
-    for index, run in enumerate(results):
+    for index, run in enumerate(results[0:]):
+        x = []
+        y = []
         fig, axs = plt.subplots(1)
+        axs.set_ylabel('Loss')
+        axs.set_xlabel('Training Steps')
         for r in run:
             if r[1] != -1:
                 x.append((int(r[0] * 12500)) + r[1])
                 y.append(r[2])
             # print(r[1:])
-        axs.plot(x, y)
+        axs.plot(x, y, label=files[index])
+        axs.legend()
         plt.show()
 
 

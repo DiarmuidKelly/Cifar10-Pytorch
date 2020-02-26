@@ -47,8 +47,7 @@ def test(network_architecture):
             # transforms.Resize(256),  # Should resizing do anything to the outcome?
             # transforms.CenterCrop(224),  # Why 224?
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])  # Apparently these are the correct values:
-        # https://github.com/pytorch/tutorials/blob/master/beginner_source/blitz/cifar10_tutorial.py
+            transforms.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784))])
     else:
         transform = transforms.Compose([
             # transforms.Resize(256),  # Should resizing do anything to the outcome?
@@ -75,7 +74,8 @@ def test(network_architecture):
                                    download=True, transform=transform)
         testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                                  shuffle=False, num_workers=workers)
-
+    # mean = trainset.train_data.mean(axis=(0, 1, 2)) / 255
+    # std = trainset.train_data.std(axis=(0, 1, 2)) / 255
     classes = ('plane', 'car', 'bird', 'cat',
                'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 

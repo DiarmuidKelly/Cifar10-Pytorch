@@ -8,7 +8,7 @@ files = []
 
 def open_files():
     global files
-    modules = glob.glob(join(dirname(__file__), "experiment1/*.npy"))
+    modules = glob.glob(join(dirname(__file__), "experiment3/*.npy"))
     __all__ = [basename(f)[:] for f in modules if isfile(f) and not f.endswith('*.out')]
     files = __all__
 
@@ -16,7 +16,7 @@ def open_files():
 def run():
     results = []
     for f in files:
-        string = 'experiment1/' + f
+        string = 'experiment3/' + f
 
         results.append(np.load(string))
         # with np.load(string) as data:

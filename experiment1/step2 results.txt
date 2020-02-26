@@ -1,0 +1,70 @@
+Model resnet101 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 36 %
+
+Model resnet101 Reshaped -pt
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 22 %
+
+Model resnet152 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 31 %
+
+Model resnet152 Reshaped -pt
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 31 %
+
+Model densenet121 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 68 %
+
+Model densenet121 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 52 %
+
+Model wide_resnet101_2 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 39 %
+
+Model wide_resnet101_2 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 76 %
+
+Model wide_resnet50_2 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 63 %
+
+Model wide_resnet50_2 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 66 %
+
+Model resnet18 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 70 %
+
+Model resnet18 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 75 %
+
+Model resnet50 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 58 %
+
+Model resnet50 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 75 %
+

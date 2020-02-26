@@ -1,0 +1,40 @@
+
+Model googlenet Reshaped
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 64 %
+
+Model resnet34 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 75 %
+
+Model vgg11 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 84 %
+
+Model vgg11_bn Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 84 %
+
+Model vgg19 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 87 %
+
+Model vgg19_bn Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 85 %
+
+Model mnasnet0_5 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 10 %
+
+Model mobilenet_v2 Reshaped
+Sending model to GPU
+Learning Rate: 0.001, Weight Decay: 0, Momentum: 0
+Accuracy of the network on the 4000.0 test images: 32 %
+

@@ -27,11 +27,11 @@ epochs = 2
 learning_rate = 0
 momentum = 0
 weight_decay = 0
-trainset_size = 20000  # TS should be lower than 12500
+trainset_size = 200000  # TS should be lower than 12500
 testset_size = trainset_size / 5
 
 # Constants
-mini_batch_print = 500
+mini_batch_print = 75
 model_names = []
 loss_vals = []
 

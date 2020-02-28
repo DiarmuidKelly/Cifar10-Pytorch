@@ -8,7 +8,7 @@
 6. Training Epochs [-ep] - 2, 4 and 10 tested (10 is best practise?)
 7. Momentum [-mo] - 0 off/default (0.9 standard)
 8. Weight Decay [-wd] - 0 off/default (0.001 tested)
-9. Learning Rate [-lr] - 0.001 Default (**Unstable results**)
+9. Learning Rate [-lr] - 0.001 Default
 10. Normalise Inputs [-n] - (0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784) - Cifar10
 # Usage
 

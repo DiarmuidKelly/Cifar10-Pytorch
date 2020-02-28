@@ -1,10 +1,3 @@
-### Fixing stuck loss; tried:
-* Squeezenet: Reshaping output to a logsoftmax layer (reduces from ~2.7 -> 2.3 then sticks)
-* Squeezenet: Changing pooling layers
-* Squeezenet: Reshaping inputs to 256 (may keep for all architectures) and centercrop
-* Densenet appears to work 🤞
-* VGG also appears to work 😊
-
 # Testing Outline
 ##### Variable Parameters:
 1. Architecture [-m] - see list for codes
@@ -14,9 +7,9 @@
 5. Trainset Size [-ts] - default 12500 (testset is ts/5)
 6. Training Epochs [-ep] - 2, 4 and 10 tested (10 is best practise?)
 7. Momentum [-mo] - 0 off/default (0.9 standard)
-8. Weight Decay [-wd] - 0 off/default (**Untested**)
-9. Learning Rate [-lr] - 0.001 Default (**needs experimentation**)
-10. Normalise Inputs [-n] - **Needs testing and further implementation**
+8. Weight Decay [-wd] - 0 off/default (0.001 tested)
+9. Learning Rate [-lr] - 0.001 Default (**Unstable results**)
+10. Normalise Inputs [-n] - (0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784) - Cifar10
 # Usage
 
 ```bash
